@@ -153,10 +153,6 @@ DEPLOYMENT.md
 RAILWAY_DEPLOYMENT.md
 deploy_railway.*
 
-# Alembic
-alembic/
-alembic.ini
-
 # Local database
 *.db
 test.db
@@ -165,6 +161,10 @@ test.db
 tmp/
 temp/
 
+# Alembic - commented out to allow copying for migrations
+# alembic/
+# alembic.ini
+
 # Docker files (except this one)
-Dockerfile.*
-.dockerignore
+# Dockerfile.*  # Commented out to allow Dockerfile copying
+# .dockerignore  # Commented out to allow .dockerignore copying
