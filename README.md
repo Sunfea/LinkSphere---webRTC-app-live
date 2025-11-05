@@ -1,308 +1,260 @@
-# WebRTC Video/Audio Communication App
+# Premium WebRTC Video Calling Application
 
-A complete, production-ready backend for real-time video/audio communication using WebRTC, FastAPI, PostgreSQL, and WebSockets.
+A modern, real-time video conferencing application built with FastAPI and WebRTC technology.
 
 ## 🚀 Features
 
-- **User Authentication**: JWT-based authentication with email verification
-- **WebRTC Signaling Server**: Custom WebSocket-based signaling for SDP offer/answer and ICE candidate exchange
-- **Multi-room Support**: Multiple rooms with multiple users per room
-- **Database Integration**: PostgreSQL with SQLAlchemy ORM and Alembic migrations
-- **REST API**: Full API for user management, room creation, and health checks
-- **Dockerized Setup**: Ready-to-deploy Docker configuration with PostgreSQL and Redis
-- **Security**: CORS setup, HTTPS-ready configuration
-- **Monitoring**: Prometheus metrics endpoint
-- **Frontend**: Simple HTML/JavaScript client for testing
+- **HD Video Calls** - Crystal-clear 1080p video with adaptive quality
+- **Secure & Private** - End-to-end encryption with JWT authentication
+- **Real-time Communication** - Ultra-low latency peer-to-peer connections
+- **Room Management** - Create, join, and manage video rooms
+- **Premium Dark UI** - Modern, responsive interface with glassmorphism effects
+- **Multi-participant Support** - Multiple users can join the same room
+- **Email Verification** - Secure OTP-based user registration
 
-## 🛠️ Tech Stack
+## 📋 Prerequisites
 
-- **Python 3.11+**
-- **FastAPI** - High performance web framework
-- **PostgreSQL** - Relational database
-- **SQLAlchemy** - ORM for database operations
-- **Alembic** - Database migration tool
-- **WebSockets** - Real-time communication
-- **Redis** - Optional for session storage
-- **Docker** - Containerization
-- **Nginx** - Reverse proxy
-- **Prometheus** - Metrics collection
-- **Pydantic** - Data validation
-- **Pytest** - Testing framework
+- Python 3.8+
+- Modern web browser (Chrome, Firefox, Safari, Edge)
+- SQLite (included with Python)
+
+## 🛠️ Installation
+
+### 1. Clone the Repository
+
+```bash
+git clone <your-repo-url>
+cd webRTC
+```
+
+### 2. Set Up Backend
+
+```bash
+cd backend
+python -m venv venv
+
+# Windows
+venv\Scripts\activate
+
+# Linux/Mac
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### 3. Configure Environment Variables
+
+```bash
+# Copy example environment file
+cp .env.example .env
+
+# Edit .env and update with your settings
+# IMPORTANT: Change SECRET_KEY in production!
+```
+
+### 4. Initialize Database
+
+```bash
+# Database will be created automatically on first run
+# Or use Alembic for migrations
+alembic upgrade head
+```
+
+## 🚀 Running the Application
+
+### Development Mode
+
+```bash
+cd backend
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+### Production Mode
+
+```bash
+cd backend
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+```
+
+### Using Docker
+
+```bash
+docker-compose up -d
+```
+
+## 🌐 Access the Application
+
+Open your browser and navigate to:
+- **Frontend**: http://localhost:8000
+- **API Documentation**: http://localhost:8000/docs
 
 ## 📁 Project Structure
 
 ```
 webRTC/
 ├── backend/
-│   ├── alembic/           # Database migrations
 │   ├── app/
-│   │   ├── api/           # REST API routes
-│   │   ├── core/          # Configuration and database setup
-│   │   ├── models/        # Database models and Pydantic schemas
-│   │   ├── schemas/       # Request/response schemas
-│   │   ├── signaling/     # WebSocket signaling server
-│   │   ├── utils/         # Utility functions
-│   │   └── main.py        # Application entry point
-│   ├── Dockerfile         # Backend Docker configuration
+│   │   ├── api/           # API endpoints
+│   │   ├── core/          # Core configurations
+│   │   ├── models/        # Database models
+│   │   ├── schemas/       # Pydantic schemas
+│   │   ├── signaling/     # WebSocket signaling
+│   │   └── utils/         # Utility functions
+│   ├── alembic/           # Database migrations
 │   ├── requirements.txt   # Python dependencies
-│   └── .env              # Environment variables
-├── frontend/              # Simple HTML/JS client
+│   └── Dockerfile
+├── frontend/
+│   ├── css/               # Stylesheets
+│   ├── js/                # JavaScript files
+│   └── *.html             # HTML pages
 ├── nginx/                 # Nginx configuration
-├── docker-compose.yml     # Docker Compose setup
-└── README.md             # This file
+├── docker-compose.yml
+└── .env.example          # Environment variables template
 ```
 
-## 🚀 Quick Start
+## 🔧 Configuration
 
-### Prerequisites
+### Environment Variables
 
-- Docker and Docker Compose
-- Python 3.11+ (for local development)
+Key environment variables to configure:
 
-### Using Docker (Recommended)
+- `DATABASE_URL` - Database connection string
+- `SECRET_KEY` - JWT secret key (must be secure in production)
+- `REDIS_HOST` - Redis server host (optional)
+- `SMTP_*` - Email configuration for OTP delivery
+- `ALLOWED_ORIGINS` - CORS allowed origins
 
-1. **Clone the repository:**
-   ```bash
-   git clone <repository-url>
-   cd webRTC
-   ```
+### Database Migration
 
-2. **Start the application:**
-   ```bash
-   docker-compose up -d
-   ```
+```bash
+# Create new migration
+alembic revision --autogenerate -m "description"
 
-3. **Access the services:**
-   - API Documentation: http://localhost:8000/docs
-   - Frontend: http://localhost
-   - Metrics: http://localhost:8000/api/metrics
+# Apply migrations
+alembic upgrade head
 
-### Local Development
-
-1. **Install dependencies:**
-   ```bash
-   cd backend
-   pip install -r requirements.txt
-   ```
-
-2. **Set up the database:**
-   ```bash
-   # Start PostgreSQL (using Docker)
-   docker-compose up -d db
-   
-   # Run database migrations
-   alembic upgrade head
-   ```
-
-3. **Start the server:**
-   ```bash
-   python app/main.py
-   ```
-
-4. **Access the application:**
-   - API: http://localhost:8000
-   - WebSocket: ws://localhost:8000/ws/signaling
-
-## 🗃️ Database Schema
-
-### Users Table
-- `id`: Integer (Primary Key)
-- `email`: String (Unique)
-- `is_verified`: Boolean
-- `username`: String (Unique)
-- `hashed_password`: String
-- `created_at`: DateTime
-
-### OTPs Table
-- `id`: Integer (Primary Key)
-- `email`: String
-- `otp`: String
-- `expiry`: DateTime
-- `created_at`: DateTime
-
-### Rooms Table
-- `id`: Integer (Primary Key)
-- `room_id`: String (Unique)
-- `created_at`: DateTime
-- `owner_id`: Integer (Foreign Key to Users)
-
-### Room Participants (Association Table)
-- `room_id`: Integer (Foreign Key to Rooms)
-- `user_id`: Integer (Foreign Key to Users)
-
-## 🔐 Authentication Flow
-
-1. **Signup**: POST `/api/auth/signup`
-   - Accepts email
-   - Generates and stores OTP
-   - Sends OTP to email
-   - Stores user with `is_verified = False`
-
-2. **Verify OTP**: POST `/api/auth/verify-otp`
-   - Accepts email + OTP
-   - Verifies OTP and sets `is_verified = True`
-
-3. **Set Username**: POST `/api/auth/set-username`
-   - Accepts email + desired username
-   - Validates username (lowercase, alphanumeric, unique)
-   - Stores username linked to email
-
-4. **Login**: POST `/api/auth/login`
-   - Accepts email
-   - Returns JWT token if email is verified
-
-## 📡 API Endpoints
-
-### Authentication
-- `POST /api/auth/signup` - Create new user account
-- `POST /api/auth/verify-otp` - Verify email with OTP
-- `POST /api/auth/set-username` - Set username for account
-- `POST /api/auth/login` - Obtain access token
-
-### Rooms
-- `POST /api/rooms/` - Create new room
-- `GET /api/rooms/` - List all rooms user is part of
-- `GET /api/rooms/{room_id}` - Get room details
-- `POST /api/rooms/{room_id}/join` - Join a room
-- `POST /api/rooms/{room_id}/leave` - Leave a room
-
-### System
-- `GET /health` - Health check
-- `GET /api/metrics` - Prometheus metrics
-
-## 🌐 WebSocket Signaling
-
-### Connection
-Connect to: `ws://localhost:8000/ws/signaling/{room_id}`
-
-Authentication is handled via JWT token in the Authorization header.
-
-### Message Types
-
-1. **Offer**
-   ```json
-   {
-     "type": "offer",
-     "sdp": "offer SDP string",
-     "target": "recipient_username"
-   }
-   ```
-
-2. **Answer**
-   ```json
-   {
-     "type": "answer",
-     "sdp": "answer SDP string",
-     "target": "recipient_username"
-   }
-   ```
-
-3. **ICE Candidate**
-   ```json
-   {
-     "type": "candidate",
-     "candidate": { /* ICE candidate object */ },
-     "target": "recipient_username"
-   }
-   ```
-
-4. **User Joined**
-   ```json
-   {
-     "type": "user_joined",
-     "username": "username",
-     "room_id": "room_id"
-   }
-   ```
-
-5. **User Left**
-   ```json
-   {
-     "type": "user_left",
-     "username": "username",
-     "room_id": "room_id"
-   }
-   ```
-
-## 🔐 Environment Variables
-
-Create a `.env` file in the backend directory:
-
-```env
-# Application settings
-PROJECT_NAME=WebRTC Communication App
-DEBUG=False
-VERSION=1.0.0
-
-# Server settings
-HOST=0.0.0.0
-PORT=8000
-
-# Security settings
-SECRET_KEY=your-super-secret-key-here-change-in-production
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
-
-# CORS settings
-BACKEND_CORS_ORIGINS=["*"]
-
-# Database settings
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/webrtc_db
-
-# Redis settings
-REDIS_URL=redis://localhost:6379
-
-# Email settings (for OTP)
-SMTP_SERVER=localhost
-SMTP_PORT=1025
-EMAIL_USER=test@example.com
-EMAIL_PASSWORD=password
+# Rollback migration
+alembic downgrade -1
 ```
 
-## 🚢 Deployment
+## 🔒 Security
 
-### Railway/Render Deployment
-
-1. Set environment variables in your deployment platform
-2. Deploy the backend directory as a web service
-3. Add PostgreSQL and Redis as separate services
-
-### VPS Deployment
-
-1. Install Docker and Docker Compose on your VPS
-2. Clone the repository
-3. Update the `docker-compose.yml` with your domain/IP
-4. Run `docker-compose up -d`
-
-### HTTPS Setup
-
-For production deployments, update the Nginx configuration to include SSL certificates.
+- All passwords are hashed using bcrypt
+- JWT tokens for authentication
+- Email OTP verification for signup
+- WebSocket connections require authentication
+- CORS configured for allowed origins
+- Input validation on all endpoints
 
 ## 🧪 Testing
 
-Run the test suite:
-
 ```bash
+# Run backend tests
 cd backend
 pytest
+
+# Run with coverage
+pytest --cov=app tests/
 ```
 
-## 📊 Monitoring
+## 📦 Deployment
 
-The application exposes Prometheus metrics at `/api/metrics` endpoint.
+### Using Docker Compose
+
+```bash
+docker-compose up -d
+```
+
+### Manual Deployment
+
+1. Set up a production server (Ubuntu/Debian recommended)
+2. Install Python 3.8+ and dependencies
+3. Configure Nginx as reverse proxy
+4. Set up SSL/TLS certificates (Let's Encrypt)
+5. Use a process manager (systemd, supervisor)
+6. Configure firewall (allow ports 80, 443, 8000)
+
+### Environment Setup
+
+```bash
+# Production settings
+DEBUG=False
+SECRET_KEY=<generate-strong-random-key>
+ALLOWED_ORIGINS=https://yourdomain.com
+```
+
+## 🌟 API Endpoints
+
+### Authentication
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/verify-otp` - Verify email OTP
+- `POST /api/auth/login` - User login
+- `GET /api/auth/me` - Get current user
+
+### Rooms
+- `GET /api/rooms/` - List all rooms
+- `POST /api/rooms/` - Create new room
+- `POST /api/rooms/{id}/join` - Join a room
+- `POST /api/rooms/{id}/leave` - Leave a room
+
+### WebSocket
+- `WS /ws/signaling/{room_id}` - WebRTC signaling
+
+## 🛡️ Production Checklist
+
+- [ ] Change `SECRET_KEY` to a secure random string
+- [ ] Set `DEBUG=False`
+- [ ] Configure proper CORS origins
+- [ ] Set up SSL/TLS certificates
+- [ ] Configure email SMTP settings
+- [ ] Set up database backups
+- [ ] Configure logging
+- [ ] Set up monitoring (optional)
+- [ ] Configure Redis for production (optional)
+- [ ] Use PostgreSQL instead of SQLite (recommended)
 
 ## 🤝 Contributing
 
+Contributions are welcome! Please follow these steps:
+
 1. Fork the repository
-2. Create your feature branch
+2. Create a feature branch
 3. Commit your changes
 4. Push to the branch
-5. Open a pull request
+5. Create a Pull Request
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 
 ## 🆘 Support
 
-For support, please open an issue on the repository.
+For issues and questions:
+- Open an issue on GitHub
+- Check the API documentation at `/docs`
+
+## 🎯 Tech Stack
+
+**Backend:**
+- FastAPI (Python web framework)
+- SQLAlchemy (ORM)
+- SQLite/PostgreSQL (Database)
+- JWT (Authentication)
+- WebSocket (Real-time signaling)
+- Redis (Optional caching)
+
+**Frontend:**
+- Vanilla JavaScript
+- HTML5
+- CSS3 (Premium dark theme)
+- WebRTC API
+
+**DevOps:**
+- Docker & Docker Compose
+- Nginx (Reverse proxy)
+- Alembic (Database migrations)
+
+---
+
+Built with ❤️ using FastAPI and WebRTC

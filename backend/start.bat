@@ -1,7 +1,14 @@
 @echo off
+echo ================================================
+echo  WebRTC Backend - Production Startup
+echo ================================================
+echo.
 
-REM Install dependencies
-pip install -r requirements.txt
+echo [1/2] Running database migrations...
+alembic upgrade head
 
-REM Start the application
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+echo.
+echo [2/2] Starting Uvicorn server...
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+
+pause
