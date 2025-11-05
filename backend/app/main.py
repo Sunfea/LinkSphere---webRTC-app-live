@@ -95,14 +95,6 @@ async def serve_room():
 async def serve_404():
     return FileResponse(frontend_path / "404.html")
 
-@app.get("/test")
-async def serve_test():
-    return FileResponse(frontend_path / "test.html")
-
-@app.get("/test-dashboard")
-async def serve_test_dashboard():
-    return FileResponse(frontend_path / "test-dashboard.html")
-
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "version": "1.0.0"}

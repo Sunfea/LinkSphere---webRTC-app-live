@@ -1,0 +1,30 @@
+version: '3.8'
+
+# Override for Railway deployment
+# Railway provides PostgreSQL and Redis services
+# This file disables local db and redis services
+
+services:
+  backend:
+    # Remove local volume mounts - Railway doesn't support them
+    volumes: []
+    # Use Railway-provided environment variables
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+      - SECRET_KEY=${SECRET_KEY}
+      - PORT=${PORT:-8000}
+    # Remove depends_on since Railway manages service dependencies
+    depends_on: []
+    
+  # Disable local database - Railway provides PostgreSQL
+  db:
+    profiles: ["local-only"]
+    
+  # Disable local Redis - Railway provides Redis
+  redis:
+    profiles: ["local-only"]
+    
+  # Disable Nginx - Railway provides its own reverse proxy
+  nginx:
+    profiles: ["local-only"]

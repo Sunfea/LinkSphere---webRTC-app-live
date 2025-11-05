@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.core.database import SessionLocal
 from app.models.database_models import Room, User
 from app.utils.database import get_db
+from app.core.config import settings
 
 class ConnectionManager:
     def __init__(self):
@@ -16,7 +17,7 @@ class ConnectionManager:
         self.room_users: Dict[str, Set[str]] = {}
         # Redis connection for distributed state (optional)
         try:
-            self.redis_client = redis.Redis.from_url("redis://localhost:6379", socket_connect_timeout=1)
+            self.redis_client = redis.Redis.from_url(settings.REDIS_URL, socket_connect_timeout=1)
             self.redis_client.ping()
             print("Redis connection established")
         except Exception as e:
