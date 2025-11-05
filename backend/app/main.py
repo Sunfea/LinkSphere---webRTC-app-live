@@ -37,12 +37,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Serve static files
-# In Docker: /app/frontend, Local: parent.parent.parent / "frontend"
-frontend_path = Path("/app/frontend") if Path("/app/frontend").exists() else Path(__file__).parent.parent.parent / "frontend"
-if frontend_path.exists():
-    app.mount("/static", StaticFiles(directory=frontend_path), name="static")
-
 # Include API routes
 app.include_router(api_router, prefix="/api")
 app.include_router(legacy_router, prefix="/api/legacy")
@@ -51,49 +45,18 @@ app.include_router(metrics_router, prefix="/api")
 # Mount the signaling app for WebSocket connections
 app.mount("/ws", signaling_app)
 
-# Serve frontend pages
-# In Docker: /app/frontend, Local: parent.parent.parent / "frontend"
-frontend_path = Path("/app/frontend") if Path("/app/frontend").exists() else Path(__file__).parent.parent.parent / "frontend"
+# Serve frontend static files
+frontend_path = Path(__file__).parent.parent / "frontend"
+if frontend_path.exists():
+    app.mount("/static", StaticFiles(directory=str(frontend_path)), name="static")
 
+# Serve the main index.html file
 @app.get("/")
-@app.head("/")
-async def serve_index():
-    return FileResponse(frontend_path / "index.html")
-
-@app.get("/signup")
-@app.head("/signup")
-async def serve_signup():
-    return FileResponse(frontend_path / "signup.html")
-
-@app.get("/verify")
-@app.head("/verify")
-async def serve_verify():
-    return FileResponse(frontend_path / "verify.html")
-
-@app.get("/username")
-@app.head("/username")
-async def serve_username():
-    return FileResponse(frontend_path / "username.html")
-
-@app.get("/login")
-@app.head("/login")
-async def serve_login():
-    return FileResponse(frontend_path / "login.html")
-
-@app.get("/dashboard")
-@app.head("/dashboard")
-async def serve_dashboard():
-    return FileResponse(frontend_path / "dashboard.html")
-
-@app.get("/room")
-@app.head("/room")
-async def serve_room():
-    return FileResponse(frontend_path / "room.html")
-
-@app.get("/404")
-@app.head("/404")
-async def serve_404():
-    return FileResponse(frontend_path / "404.html")
+async def read_index():
+    index_path = frontend_path / "index.html"
+    if index_path.exists():
+        return FileResponse(index_path)
+    return {"message": "WebRTC Video/Audio Communication Backend"}
 
 @app.get("/health")
 async def health_check():

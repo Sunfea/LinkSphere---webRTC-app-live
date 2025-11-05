@@ -23,7 +23,6 @@ RUN pip install --no-cache-dir --upgrade pip \
 
 # Copy only necessary application code
 COPY app/ ./app/
-COPY ../frontend/ ./frontend/
 
 # Change ownership to non-root user
 RUN chown -R appuser:appuser /app

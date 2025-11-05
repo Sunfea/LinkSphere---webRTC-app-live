@@ -12,12 +12,16 @@ import os
 # Add the parent directory to the path so we can import our models
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
+from app.core.database import DATABASE_URL
 from app.core.database import Base
 from app.models.database_models import User, OTP, Room
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+
+# Set the sqlalchemy.url dynamically from our application config
+config.set_main_option('sqlalchemy.url', DATABASE_URL)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
