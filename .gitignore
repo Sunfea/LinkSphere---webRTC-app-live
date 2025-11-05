@@ -1,0 +1,6 @@
+__pycache__
+test.db
+.env
+.pytest_cache
+.coverage
+.coverage.xml

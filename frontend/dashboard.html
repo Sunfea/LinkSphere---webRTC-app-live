@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏠 Dashboard - Premium WebRTC</title>
+    <link rel="stylesheet" href="/static/css/premium-dark.css?v=11">
+</head>
+<body>
+    <div class="dashboard-container">
+        <nav class="dashboard-nav">
+            <div class="nav-brand">
+                <h2>WebRTC App</h2>
+            </div>
+            <div class="nav-user">
+                <span class="user-name" id="userDisplay">User</span>
+                <button class="btn btn-small btn-logout" id="logoutBtn">Logout</button>
+            </div>
+        </nav>
+        
+        <main class="dashboard-main container">
+            <div class="dashboard-header">
+                <h1>🎥 Your Rooms</h1>
+                <button class="btn btn-primary" id="createRoomBtn">
+                    ➕ Create New Room
+                </button>
+            </div>
+            
+            <div id="createRoomSection" class="create-room-section" style="display: none; margin-bottom: 2rem;">
+                <div class="create-room-card">
+                    <h3 style="text-align: center; margin-bottom: 1.5rem; font-size: 1.5rem;">✨ Create New Room</h3>
+                    <form id="createRoomForm">
+                        <div class="form-group">
+                            <label for="roomName">Room Name</label>
+                            <input 
+                                type="text" 
+                                id="roomName" 
+                                name="roomName" 
+                                required 
+                                placeholder="Enter room name"
+                                maxlength="50"
+                            >
+                        </div>
+                        <div class="form-actions" style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
+                            <button type="submit" class="btn btn-primary" style="flex: 1;">🚀 Create Room</button>
+                            <button type="button" class="btn btn-secondary" id="cancelCreateBtn" style="flex: 1;">Cancel</button>
+                        </div>
+                    </form>
+                    <div id="createRoomMessage" class="form-message"></div>
+                </div>
+            </div>
+            
+            <div id="roomsMessage" class="form-message"></div>
+            
+            <div class="rooms-grid" id="roomsGrid">
+                <div class="loading">Loading rooms...</div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Auth functions -->
+    <script defer src="/static/js/auth.js?v=7"></script>
+    
+    <!-- Rooms API - Inline to ensure availability -->
+    <script>
+    (function() {
+        'use strict';
+        console.log('📦 Rooms module: Starting inline initialization');
+        
+        const API_BASE_URL = 'http://localhost:8000';
+        
+        window.createRoom = async function(roomName) {
+            const token = localStorage.getItem('authToken');
+            const response = await fetch(`${API_BASE_URL}/api/rooms/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ name: roomName })
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.detail || 'Failed to create room');
+            return data;
+        };
+        
+        window.listRooms = async function() {
+            const token = localStorage.getItem('authToken');
+            const response = await fetch(`${API_BASE_URL}/api/rooms/`, {
+                method: 'GET',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.detail || 'Failed to fetch rooms');
+            return data;
+        };
+        
+        window.joinRoom = async function(roomId) {
+            const token = localStorage.getItem('authToken');
+            const response = await fetch(`${API_BASE_URL}/api/rooms/${roomId}/join`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.detail || 'Failed to join room');
+            return data;
+        };
+        
+        window.leaveRoom = async function(roomId) {
+            const token = localStorage.getItem('authToken');
+            const response = await fetch(`${API_BASE_URL}/api/rooms/${roomId}/leave`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.detail || 'Failed to leave room');
+            return data;
+        };
+        
+        console.log('✅ Rooms module: Functions defined');
+        console.log('  - createRoom:', typeof window.createRoom);
+        console.log('  - listRooms:', typeof window.listRooms);
+        console.log('  - joinRoom:', typeof window.joinRoom);
+        console.log('  - leaveRoom:', typeof window.leaveRoom);
+    })();
+    </script>
+    
+    <!-- Dashboard logic -->
+    <script defer src="/static/js/dashboard.js?v=11"></script>
+</body>
+</html>

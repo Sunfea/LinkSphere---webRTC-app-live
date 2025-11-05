@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎥 Video Room - Premium WebRTC</title>
+    <link rel="stylesheet" href="/static/css/premium-dark.css?v=10">
+</head>
+<body>
+    <div class="room-container">
+        <nav class="room-nav">
+            <div class="nav-info">
+                <h2 id="roomName">Room</h2>
+                <span class="room-id" id="roomId"></span>
+            </div>
+            <div class="nav-actions">
+                <button class="btn btn-small btn-secondary" id="leaveRoomBtn">Leave Room</button>
+            </div>
+        </nav>
+        
+        <main class="room-main">
+            <div class="video-grid" id="videoGrid">
+                <div class="video-container local-video">
+                    <video id="localVideo" autoplay muted playsinline></video>
+                    <div class="video-label">You</div>
+                </div>
+                <!-- Remote videos will be added dynamically -->
+            </div>
+            
+            <div class="room-controls">
+                <button class="control-btn" id="toggleAudioBtn" title="Mute/Unmute">
+                    <span class="control-icon">🎤</span>
+                </button>
+                <button class="control-btn" id="toggleVideoBtn" title="Camera On/Off">
+                    <span class="control-icon">📹</span>
+                </button>
+                <button class="control-btn btn-danger" id="endCallBtn" title="End Call">
+                    <span class="control-icon">📞</span>
+                </button>
+            </div>
+            
+            <div class="room-status" id="roomStatus">
+                Connecting...
+            </div>
+        </main>
+    </div>
+    
+    <script src="/static/js/auth.js?v=9"></script>
+    <script src="/static/js/signaling.js?v=9"></script>
+    <script src="/static/js/webrtc.js?v=9"></script>
+</body>
+</html>

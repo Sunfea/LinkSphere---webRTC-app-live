@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✉️ Verify Email - Premium WebRTC</title>
+    <link rel="stylesheet" href="/static/css/premium-dark.css?v=10">
+</head>
+<body>
+    <div class="container">
+        <div class="auth-wrapper">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h1>Verify Email</h1>
+                    <p>Enter the OTP code sent to your email</p>
+                    <p class="email-display" id="emailDisplay"></p>
+                </div>
+                
+                <form id="verifyForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="otp">OTP Code</label>
+                        <input 
+                            type="text" 
+                            id="otp" 
+                            name="otp" 
+                            required 
+                            placeholder="Enter 6-digit code"
+                            maxlength="6"
+                            pattern="[0-9]{6}"
+                            autocomplete="one-time-code"
+                        >
+                        <span class="form-error" id="otpError"></span>
+                    </div>
+                    
+                    <div id="formMessage" class="form-message"></div>
+                    
+                    <button type="submit" class="btn btn-primary btn-full" id="verifyBtn">
+                        Verify Email
+                    </button>
+                </form>
+                
+                <div class="auth-footer">
+                    <p>Didn't receive the code? <a href="#" id="resendLink">Resend OTP</a></p>
+                    <p><a href="/signup">Back to Sign Up</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/static/js/auth.js"></script>
+    <script>
+        // Display email from localStorage
+        const email = localStorage.getItem('pendingEmail');
+        if (!email) {
+            window.location.href = '/signup';
+        } else {
+            document.getElementById('emailDisplay').textContent = email;
+        }
+        
+        document.getElementById('verifyForm').addEventListener('submit', handleVerifyOTP);
+        document.getElementById('resendLink').addEventListener('click', handleResendOTP);
+    </script>
+</body>
+</html>

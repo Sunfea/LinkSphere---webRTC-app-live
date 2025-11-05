@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎉 Welcome - Premium WebRTC</title>
+    <link rel="stylesheet" href="/static/css/premium-dark.css?v=10">
+</head>
+<body>
+    <div class="container">
+        <div class="auth-wrapper">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <div class="success-icon">✓</div>
+                    <h1>Welcome!</h1>
+                    <p>Your account has been created successfully</p>
+                </div>
+                
+                <div class="username-display">
+                    <h2>Your Username</h2>
+                    <div class="username-box" id="usernameDisplay">
+                        Loading...
+                    </div>
+                    <p class="username-hint">Use this username to log in</p>
+                </div>
+                
+                <div class="cta-buttons">
+                    <button class="btn btn-primary btn-full" onclick="window.location.href='/login'">
+                        Continue to Login
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/static/js/auth.js"></script>
+    <script>
+        // Display username from localStorage
+        const username = localStorage.getItem('assignedUsername');
+        if (!username) {
+            window.location.href = '/signup';
+        } else {
+            document.getElementById('usernameDisplay').textContent = username;
+        }
+        
+        // Clear temporary data
+        localStorage.removeItem('pendingEmail');
+    </script>
+</body>
+</html>
