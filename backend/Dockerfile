@@ -5,9 +5,15 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH=/app
 
-# Install system dependencies
+# Install system dependencies including FFmpeg libraries for aiortc
 RUN apk add --no-cache \
     libpq \
+    postgresql-dev \
+    gcc \
+    musl-dev \
+    libffi-dev \
+    openssl-dev \
+    ffmpeg-dev \
     && rm -rf /var/cache/apk/*
 
 # Create app directory
@@ -23,6 +29,8 @@ RUN pip install --no-cache-dir --upgrade pip \
 
 # Copy only necessary application code
 COPY app/ ./app/
+COPY start.sh .
+RUN chmod +x start.sh
 
 # Change ownership to non-root user
 RUN chown -R appuser:appuser /app
@@ -33,5 +41,9 @@ USER appuser
 # Expose port
 EXPOSE 8000
 
-# Run database migrations and start the application
-CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD wget --spider -q http://localhost:${PORT:-8000}/health || exit 1
+
+# Run the application
+CMD ["sh", "./start.sh"]

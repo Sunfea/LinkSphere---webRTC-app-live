@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Production startup script for WebRTC Backend
 
