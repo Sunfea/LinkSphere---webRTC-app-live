@@ -31,8 +31,6 @@ RUN pip install --no-cache-dir --upgrade pip \
 COPY app/ ./app/
 COPY alembic/ ./alembic/
 COPY alembic.ini .
-COPY start.sh .
-RUN chmod +x start.sh
 
 # Change ownership to non-root user
 RUN chown -R appuser:appuser /app
@@ -47,5 +45,5 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD wget --spider -q http://localhost:${PORT:-8000}/health || exit 1
 
-# Run the application
-CMD ["sh", "./start.sh"]
+# Run database migrations and start the application
+CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
