@@ -38,7 +38,8 @@ app.add_middleware(
 )
 
 # Serve static files
-frontend_path = Path(__file__).parent.parent.parent / "frontend"
+# In Docker: /app/frontend, Local: parent.parent.parent / "frontend"
+frontend_path = Path("/app/frontend") if Path("/app/frontend").exists() else Path(__file__).parent.parent.parent / "frontend"
 if frontend_path.exists():
     app.mount("/static", StaticFiles(directory=frontend_path), name="static")
 
@@ -51,7 +52,8 @@ app.include_router(metrics_router, prefix="/api")
 app.mount("/ws", signaling_app)
 
 # Serve frontend pages
-frontend_path = Path(__file__).parent.parent.parent / "frontend"
+# In Docker: /app/frontend, Local: parent.parent.parent / "frontend"
+frontend_path = Path("/app/frontend") if Path("/app/frontend").exists() else Path(__file__).parent.parent.parent / "frontend"
 
 @app.get("/")
 @app.head("/")

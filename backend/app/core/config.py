@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     
     # CORS settings
     BACKEND_CORS_ORIGINS: List[str] = ["*"]
+    ALLOWED_ORIGINS: str = os.getenv("ALLOWED_ORIGINS", "*")
     
     # Database settings
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./test.db")
@@ -32,11 +33,15 @@ class Settings(BaseSettings):
     # Email settings (for OTP)
     SMTP_SERVER: str = os.getenv("SMTP_SERVER", "localhost")
     SMTP_PORT: int = int(os.getenv("SMTP_PORT", 1025))
+    SMTP_HOST: str = os.getenv("SMTP_HOST", "localhost")
+    SMTP_USER: str = os.getenv("SMTP_USER", "test@example.com")
+    SMTP_PASSWORD: str = os.getenv("SMTP_PASSWORD", "password")
     EMAIL_USER: str = os.getenv("EMAIL_USER", "test@example.com")
     EMAIL_PASSWORD: str = os.getenv("EMAIL_PASSWORD", "password")
     
     class Config:
         case_sensitive = True
         env_file = ".env"
+        extra = "ignore"
 
 settings = Settings()
