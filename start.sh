@@ -4,9 +4,15 @@
 
 echo "Starting WebRTC Backend..."
 
-# Run database migrations
-echo "Running database migrations..."
-alembic upgrade head
+# Wait for database to be ready
+echo "Waiting for database to be ready..."
+until alembic upgrade head
+do
+  echo "Database not ready, waiting..."
+  sleep 5
+done
+
+echo "Database migrations completed successfully!"
 
 # Start the application with production settings
 echo "Starting Uvicorn server..."

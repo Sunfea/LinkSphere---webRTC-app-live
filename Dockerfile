@@ -28,9 +28,10 @@ RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir -r requirements-prod.txt
 
 # Copy only necessary application code
-COPY app/ ./app/
+COPY backend/app/ ./app/
 COPY alembic/ ./alembic/
 COPY alembic.ini .
+COPY frontend/ ./frontend/
 
 # Change ownership to non-root user
 RUN chown -R appuser:appuser /app
