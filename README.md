@@ -16,7 +16,8 @@ A modern, real-time video conferencing application built with FastAPI and WebRTC
 
 - Python 3.8+
 - Modern web browser (Chrome, Firefox, Safari, Edge)
-- SQLite (included with Python)
+- Docker & Docker Compose (recommended)
+- PostgreSQL (for production)
 
 ## 🛠️ Installation
 
@@ -30,6 +31,10 @@ cd webRTC
 ### 2. Set Up Backend
 
 ```bash
+# Using Docker (recommended)
+docker-compose up --build
+
+# Or manually:
 cd backend
 python -m venv venv
 
@@ -40,7 +45,7 @@ venv\Scripts\activate
 source venv/bin/activate
 
 # Install dependencies
-pip install -r requirements.txt
+pip install -r requirements-prod.txt
 ```
 
 ### 3. Configure Environment Variables
@@ -56,12 +61,22 @@ cp .env.example .env
 ### 4. Initialize Database
 
 ```bash
-# Database will be created automatically on first run
-# Or use Alembic for migrations
+# Database migrations are automatically applied on startup
+# Or manually run migrations:
 alembic upgrade head
 ```
 
 ## 🚀 Running the Application
+
+### Using Docker (Recommended)
+
+```bash
+# Build and start all services
+docker-compose up --build
+
+# Run in detached mode
+docker-compose up -d --build
+```
 
 ### Development Mode
 
@@ -77,12 +92,6 @@ cd backend
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
 ```
 
-### Using Docker
-
-```bash
-docker-compose up -d
-```
-
 ## 🌐 Access the Application
 
 Open your browser and navigate to:
@@ -94,7 +103,7 @@ Open your browser and navigate to:
 ```
 webRTC/
 ├── backend/
-│   ├── app/
+│   ├── app/               # Backend application code
 │   │   ├── api/           # API endpoints
 │   │   ├── core/          # Core configurations
 │   │   ├── models/        # Database models
@@ -103,14 +112,19 @@ webRTC/
 │   │   └── utils/         # Utility functions
 │   ├── alembic/           # Database migrations
 │   ├── requirements.txt   # Python dependencies
+│   ├── requirements-prod.txt # Production dependencies
 │   └── Dockerfile
-├── frontend/
+├── frontend/              # Frontend files
 │   ├── css/               # Stylesheets
 │   ├── js/                # JavaScript files
 │   └── *.html             # HTML pages
 ├── nginx/                 # Nginx configuration
-├── docker-compose.yml
-└── .env.example          # Environment variables template
+├── alembic.ini            # Alembic configuration
+├── docker-compose.yml     # Docker Compose configuration
+├── docker-compose.override.yml # Docker Compose overrides
+├── start.sh               # Production startup script
+├── start.bat              # Windows startup script
+└── .env.example           # Environment variables template
 ```
 
 ## 🔧 Configuration
@@ -195,8 +209,9 @@ ALLOWED_ORIGINS=https://yourdomain.com
 ### Rooms
 - `GET /api/rooms/` - List all rooms
 - `POST /api/rooms/` - Create new room
-- `POST /api/rooms/{id}/join` - Join a room
-- `POST /api/rooms/{id}/leave` - Leave a room
+- `GET /api/rooms/{room_id}` - Get room details
+- `POST /api/rooms/{room_id}/join` - Join a room
+- `POST /api/rooms/{room_id}/leave` - Leave a room
 
 ### WebSocket
 - `WS /ws/signaling/{room_id}` - WebRTC signaling
@@ -239,7 +254,7 @@ For issues and questions:
 **Backend:**
 - FastAPI (Python web framework)
 - SQLAlchemy (ORM)
-- SQLite/PostgreSQL (Database)
+- PostgreSQL (Database)
 - JWT (Authentication)
 - WebSocket (Real-time signaling)
 - Redis (Optional caching)
