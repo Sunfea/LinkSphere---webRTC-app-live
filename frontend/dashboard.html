@@ -4,60 +4,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🏠 Dashboard - Premium WebRTC</title>
-    <link rel="stylesheet" href="/static/css/premium-dark.css?v=11">
+    <link rel="stylesheet" href="/static/css/premium-dark.css?v=10">
 </head>
 <body>
-    <div class="dashboard-container">
-        <nav class="dashboard-nav">
-            <div class="nav-brand">
-                <h2>WebRTC App</h2>
-            </div>
-            <div class="nav-user">
-                <span class="user-name" id="userDisplay">User</span>
-                <button class="btn btn-small btn-logout" id="logoutBtn">Logout</button>
-            </div>
-        </nav>
-        
-        <main class="dashboard-main container">
-            <div class="dashboard-header">
-                <h1>🎥 Your Rooms</h1>
-                <button class="btn btn-primary" id="createRoomBtn">
-                    ➕ Create New Room
-                </button>
-            </div>
-            
-            <div id="createRoomSection" class="create-room-section" style="display: none; margin-bottom: 2rem;">
-                <div class="create-room-card">
-                    <h3 style="text-align: center; margin-bottom: 1.5rem; font-size: 1.5rem;">✨ Create New Room</h3>
-                    <form id="createRoomForm">
-                        <div class="form-group">
-                            <label for="roomName">Room Name</label>
-                            <input 
-                                type="text" 
-                                id="roomName" 
-                                name="roomName" 
-                                required 
-                                placeholder="Enter room name"
-                                maxlength="50"
-                            >
-                        </div>
-                        <div class="form-actions" style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
-                            <button type="submit" class="btn btn-primary" style="flex: 1;">🚀 Create Room</button>
-                            <button type="button" class="btn btn-secondary" id="cancelCreateBtn" style="flex: 1;">Cancel</button>
-                        </div>
-                    </form>
-                    <div id="createRoomMessage" class="form-message"></div>
+    <div class="landing-container">
+        <div class="dashboard-wrapper">
+            <!-- Header -->
+            <header class="dashboard-header">
+                <div class="header-content">
+                    <h1 class="dashboard-title">🎥 Video Dashboard</h1>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary" onclick="handleLogout()">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
                 </div>
-            </div>
-            
-            <div id="roomsMessage" class="form-message"></div>
-            
-            <div class="rooms-grid" id="roomsGrid">
-                <div class="loading">Loading rooms...</div>
-            </div>
-        </main>
+            </header>
+
+            <!-- Main Content -->
+            <main class="dashboard-main">
+                <!-- Create Room Section -->
+                <section class="create-room-section">
+                    <div class="card">
+                        <h2>Create New Room</h2>
+                        <form id="createRoomForm" class="create-room-form">
+                            <div class="form-group">
+                                <input 
+                                    type="text" 
+                                    id="roomName" 
+                                    placeholder="Enter room name" 
+                                    required
+                                    autocomplete="off"
+                                >
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-plus-circle"></i> Create Room
+                            </button>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- Rooms List Section -->
+                <section class="rooms-section">
+                    <div class="section-header">
+                        <h2>Your Rooms</h2>
+                        <button id="refreshRooms" class="btn btn-icon">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                    
+                    <div id="roomsContainer" class="rooms-grid">
+                        <!-- Rooms will be loaded here -->
+                        <div class="empty-state">
+                            <i class="fas fa-video-slash"></i>
+                            <p>No rooms created yet</p>
+                            <p>Create your first room to get started</p>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
     </div>
-    
+
     <!-- Auth functions -->
     <script defer src="/static/js/auth.js?v=7"></script>
     
@@ -67,7 +75,7 @@
         'use strict';
         console.log('📦 Rooms module: Starting inline initialization');
         
-        const API_BASE_URL = 'http://localhost:8000';
+        const API_BASE_URL = '';
         
         window.createRoom = async function(roomName) {
             const token = localStorage.getItem('authToken');

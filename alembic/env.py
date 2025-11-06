@@ -10,11 +10,14 @@ import sys
 import os
 
 # Add the backend directory to the path so we can import our models
-backend_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'backend')
-sys.path.append(backend_path)
+# Get the absolute path to ensure it works in all environments
+current_dir = os.path.dirname(os.path.abspath(__file__))
+backend_path = os.path.join(current_dir, '..', 'backend')
+sys.path.insert(0, backend_path)
 
-from app.core.database import DATABASE_URL
-from app.core.database import Base
+# Import the database configuration and models
+# These imports should work now that we've added the backend path
+from app.core.database import DATABASE_URL, Base
 from app.models.database_models import User, OTP, Room
 
 # this is the Alembic Config object, which provides

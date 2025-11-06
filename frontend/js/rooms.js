@@ -7,8 +7,7 @@ console.log('🔄 Rooms.js: Script started loading');
 window.roomsModuleLoading = true;
 console.log('✅ Rooms.js: Set roomsModuleLoading = true');
 
-const API_BASE_URL = 'http://localhost:8000';
-console.log('✅ Rooms.js: API_BASE_URL set');
+const API_BASE_URL = '';
 
 // ========================
 // Room API Calls

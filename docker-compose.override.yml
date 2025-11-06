@@ -1,5 +1,3 @@
-version: '3.8'
-
 # Override for Railway deployment
 # Railway provides PostgreSQL and Redis services
 # This file disables local db and redis services
@@ -15,7 +13,7 @@ services:
       - SECRET_KEY=${SECRET_KEY}
       - PORT=${PORT:-8000}
     # Remove depends_on since Railway manages service dependencies
-    depends_on: []
+    depends_on: {}
     
   # Disable local database - Railway provides PostgreSQL
   db:

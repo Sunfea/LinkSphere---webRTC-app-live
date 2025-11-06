@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   backend:
     build:
@@ -13,10 +11,8 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/webrtc_db
       - REDIS_URL=redis://redis:6379
     depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_started
+      - db
+      - redis
     networks:
       - webrtc-network
     restart: unless-stopped
