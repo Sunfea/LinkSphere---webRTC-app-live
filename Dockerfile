@@ -4,7 +4,8 @@ FROM python:3.11-alpine
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH=/app
-ENV DEBUG=False
+ENV DEBUG=True
+ENV SMTP_HOST=localhost
 
 # Install system dependencies including FFmpeg libraries for aiortc
 RUN apk add --no-cache \
