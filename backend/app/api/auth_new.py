@@ -63,6 +63,13 @@ def generate_unique_username(db: Session, email: str) -> str:
 async def register(request: RegisterRequest, db: Session = Depends(get_db)):
     """Register endpoint - accepts email and password, generates and stores OTP"""
     
+    # Validate that email ends with @gmail.com
+    if not request.email.endswith('@gmail.com'):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email must be a Gmail address (end with @gmail.com)"
+        )
+    
     # Check if user already exists
     existing_user = db.query(User).filter(User.email == request.email).first()
     if existing_user:
@@ -108,6 +115,13 @@ async def register(request: RegisterRequest, db: Session = Depends(get_db)):
 @router.post("/verify-otp", response_model=OTPResponse)
 async def verify_otp(request: VerifyOTPRequest, db: Session = Depends(get_db)):
     """Verify OTP endpoint - accepts email + OTP, verifies OTP and sets is_verified = True"""
+    
+    # Validate that email ends with @gmail.com
+    if not request.email.endswith('@gmail.com'):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email must be a Gmail address (end with @gmail.com)"
+        )
     
     # Find OTP record
     otp_record = db.query(OTP).filter(

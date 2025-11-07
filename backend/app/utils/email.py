@@ -3,47 +3,54 @@ import os
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from typing import Optional
+from app.core.config import settings
 
 def send_otp_email(email: str, otp: str) -> bool:
     """
-    Send OTP to email. In production, this would use SMTP.
-    For development, we'll just print to console.
+    Send OTP to email using SMTP.
     """
     try:
-        # For development, just print to console with a clear message
-        print("=" * 50)
-        print(f"OTP EMAIL SIMULATION")
-        print(f"To: {email}")
-        print(f"Subject: Your OTP Code")
-        print(f"")
-        print(f"Your OTP code is: {otp}")
-        print(f"")
-        print(f"NOTE: This is a development environment.")
-        print(f"In production, this OTP would be sent to your email.")
-        print("=" * 50)
+        # Check if we're in development mode
+        if settings.DEBUG or settings.SMTP_HOST == "localhost":
+            # For development, just print to console with a clear message
+            print("=" * 60)
+            print("OTP EMAIL SIMULATION - FOR TESTING PURPOSES")
+            print("=" * 60)
+            print(f"📧 EMAIL ADDRESS: {email}")
+            print(f"🔑 OTP CODE: {otp}")
+            print(f"⏰ EXPIRES IN: 10 minutes")
+            print("")
+            print("NOTE: This is a development environment.")
+            print("In production, this OTP would be sent to your email.")
+            print("=" * 60)
+            return True
         
-        # In production, you would use SMTP:
-        """
-        smtp_server = os.getenv("SMTP_SERVER")
-        smtp_port = int(os.getenv("SMTP_PORT", 587))
-        email_user = os.getenv("EMAIL_USER")
-        email_password = os.getenv("EMAIL_PASSWORD")
-        
+        # In production, use SMTP to send real emails
         msg = MIMEMultipart()
-        msg['From'] = email_user
+        msg['From'] = settings.SMTP_USER
         msg['To'] = email
-        msg['Subject'] = "Your OTP Code"
+        msg['Subject'] = "Your OTP Code for WebRTC App"
         
-        body = f"Your OTP code is: {otp}"
+        body = f"""
+Hello,
+
+Your OTP code for WebRTC App is: {otp}
+
+This code will expire in 10 minutes.
+
+If you didn't request this code, please ignore this email.
+
+Best regards,
+WebRTC App Team
+        """
         msg.attach(MIMEText(body, 'plain'))
         
-        server = smtplib.SMTP(smtp_server, smtp_port)
+        server = smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT)
         server.starttls()
-        server.login(email_user, email_password)
+        server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
         text = msg.as_string()
-        server.sendmail(email_user, email, text)
+        server.sendmail(settings.SMTP_USER, email, text)
         server.quit()
-        """
         
         return True
     except Exception as e:
@@ -52,47 +59,62 @@ def send_otp_email(email: str, otp: str) -> bool:
 
 def send_username_email(email: str, username: str) -> bool:
     """
-    Send username to email. In production, this would use SMTP.
-    For development, we'll just print to console.
+    Send username to email using SMTP.
     """
     try:
-        # For development, just print to console with a clear message
-        print("=" * 50)
-        print(f"USERNAME EMAIL SIMULATION")
-        print(f"To: {email}")
-        print(f"Subject: Your Username")
-        print(f"")
-        print(f"Your username is: {username}")
-        print(f"You can now login using this username and your password.")
-        print(f"")
-        print(f"NOTE: This is a development environment.")
-        print(f"In production, this username would be sent to your email.")
-        print("=" * 50)
+        # Check if we're in development mode
+        if settings.DEBUG or settings.SMTP_HOST == "localhost":
+            # For development, just print to console with a clear message
+            print("=" * 60)
+            print("USERNAME EMAIL SIMULATION - FOR TESTING PURPOSES")
+            print("=" * 60)
+            print(f"📧 EMAIL ADDRESS: {email}")
+            print(f"👤 USERNAME: {username}")
+            print("")
+            print("You can now login using this username and your password.")
+            print("")
+            print("NOTE: This is a development environment.")
+            print("In production, this username would be sent to your email.")
+            print("=" * 60)
+            return True
         
-        # In production, you would use SMTP:
-        """
-        smtp_server = os.getenv("SMTP_SERVER")
-        smtp_port = int(os.getenv("SMTP_PORT", 587))
-        email_user = os.getenv("EMAIL_USER")
-        email_password = os.getenv("EMAIL_PASSWORD")
-        
+        # In production, use SMTP to send real emails
         msg = MIMEMultipart()
-        msg['From'] = email_user
+        msg['From'] = settings.SMTP_USER
         msg['To'] = email
-        msg['Subject'] = "Your Username"
+        msg['Subject'] = "Your Username for WebRTC App"
         
-        body = f"Your username is: {username}\nYou can now login using this username and your password."
+        body = f"""
+Hello,
+
+Your username for WebRTC App is: {username}
+
+You can now login using this username and your password.
+
+Best regards,
+WebRTC App Team
+        """
         msg.attach(MIMEText(body, 'plain'))
         
-        server = smtplib.SMTP(smtp_server, smtp_port)
+        server = smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT)
         server.starttls()
-        server.login(email_user, email_password)
+        server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
         text = msg.as_string()
-        server.sendmail(email_user, email, text)
+        server.sendmail(settings.SMTP_USER, email, text)
         server.quit()
-        """
         
         return True
     except Exception as e:
         print(f"Error sending email: {e}")
         return False
+
+def test_otp_display(email: str, otp: str):
+    """
+    Utility function for testing - displays OTP and email clearly
+    """
+    print("=" * 60)
+    print("TEST OTP DISPLAY")
+    print("=" * 60)
+    print(f"📧 EMAIL ADDRESS: {email}")
+    print(f"🔑 OTP CODE: {otp}")
+    print("=" * 60)

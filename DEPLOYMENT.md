@@ -13,7 +13,7 @@ This guide covers deploying the WebRTC application to production.
 
 ### Configuration
 - [ ] Copy `.env.example` to `.env` and configure
-- [ ] Set up email SMTP for OTP delivery
+- [ ] Set up Gmail SMTP for OTP delivery (see Email Configuration below)
 - [ ] Configure database (PostgreSQL recommended for production)
 - [ ] Set up Redis for session management (optional)
 
@@ -40,13 +40,15 @@ sudo apt-get install docker-compose-plugin
 
 ```bash
 # Copy and edit environment file
-cp .env.example .env
+cp .env.production.example .env
 nano .env
 
 # Update these critical values:
 SECRET_KEY=<generate-strong-random-key>
 DEBUG=False
 ALLOWED_ORIGINS=https://yourdomain.com
+SMTP_USER=your-production-email@gmail.com
+SMTP_PASSWORD=your-gmail-app-password
 ```
 
 ### 3. Build and Start Services
@@ -351,6 +353,33 @@ alembic upgrade head
 - Optimize database queries
 - Enable Redis caching
 
+## 📧 Email Configuration (Gmail SMTP)
+
+The application uses Gmail SMTP for sending OTP emails in production. You'll need to configure Gmail properly:
+
+### 1. Enable 2-Factor Authentication
+1. Go to your Google Account settings
+2. Navigate to Security
+3. Enable 2-Step Verification
+
+### 2. Generate App Password
+1. In Google Account settings, go to Security
+2. Under "Signing in to Google", select "App passwords"
+3. Select "Mail" and your device
+4. Copy the generated 16-character password
+
+### 3. Configure Environment Variables
+
+```bash
+# In your .env file
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-production-email@gmail.com
+SMTP_PASSWORD=your-16-char-app-password
+```
+
+> **Note**: Never use your regular Gmail password. Always use an App Password for security.
+
 ## 🔐 Environment Variables Reference
 
 | Variable | Description | Example |
@@ -360,6 +389,9 @@ alembic upgrade head
 | `DATABASE_URL` | Database connection | `postgresql://user:pass@host/db` |
 | `REDIS_HOST` | Redis server host | `localhost` or `redis` |
 | `SMTP_HOST` | Email server | `smtp.gmail.com` |
+| `SMTP_PORT` | Email server port | `587` |
+| `SMTP_USER` | Gmail address | `your-email@gmail.com` |
+| `SMTP_PASSWORD` | Gmail App Password | `your-app-password` |
 | `ALLOWED_ORIGINS` | CORS origins | `https://yourdomain.com` |
 
 ## ✅ Post-Deployment Verification
@@ -372,6 +404,21 @@ alembic upgrade head
 6. Check WebSocket connectivity
 7. Monitor logs for errors
 8. Test mobile responsiveness
+
+### Email Testing
+
+To verify email functionality:
+
+1. Register a new user with a valid Gmail address
+2. Check that you receive an OTP email
+3. Verify the OTP to complete registration
+4. Check that you receive a username confirmation email
+
+If emails aren't being sent:
+- Verify SMTP credentials in `.env`
+- Check application logs for email errors
+- Ensure Gmail App Password is correct
+- Confirm firewall allows outbound SMTP connections
 
 ---
 

@@ -5,135 +5,90 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🏠 Dashboard - Premium WebRTC</title>
     <link rel="stylesheet" href="/static/css/premium-dark.css?v=10">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="landing-container">
+    <!-- Navigation -->
+    <nav class="dashboard-nav">
+        <div class="nav-brand">
+            <h2>🎥 Premium WebRTC</h2>
+        </div>
+        <div class="nav-user">
+            <span class="user-name" id="userDisplay">Loading...</span>
+            <button class="btn btn-secondary" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </nav>
+
+    <div class="container">
         <div class="dashboard-wrapper">
             <!-- Header -->
             <header class="dashboard-header">
                 <div class="header-content">
                     <h1 class="dashboard-title">🎥 Video Dashboard</h1>
-                    <div class="header-actions">
-                        <button class="btn btn-secondary" onclick="handleLogout()">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </button>
-                    </div>
                 </div>
             </header>
 
             <!-- Main Content -->
             <main class="dashboard-main">
-                <!-- Create Room Section -->
-                <section class="create-room-section">
-                    <div class="card">
-                        <h2>Create New Room</h2>
-                        <form id="createRoomForm" class="create-room-form">
-                            <div class="form-group">
-                                <input 
-                                    type="text" 
-                                    id="roomName" 
-                                    placeholder="Enter room name" 
-                                    required
-                                    autocomplete="off"
-                                >
+                <div class="dashboard-content">
+                    <!-- Create Room Section -->
+                    <section class="create-room-section">
+                        <div class="card create-room-card">
+                            <div class="card-header">
+                                <h2>Create New Room</h2>
                             </div>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-plus-circle"></i> Create Room
-                            </button>
-                        </form>
-                    </div>
-                </section>
-
-                <!-- Rooms List Section -->
-                <section class="rooms-section">
-                    <div class="section-header">
-                        <h2>Your Rooms</h2>
-                        <button id="refreshRooms" class="btn btn-icon">
-                            <i class="fas fa-sync-alt"></i>
-                        </button>
-                    </div>
-                    
-                    <div id="roomsContainer" class="rooms-grid">
-                        <!-- Rooms will be loaded here -->
-                        <div class="empty-state">
-                            <i class="fas fa-video-slash"></i>
-                            <p>No rooms created yet</p>
-                            <p>Create your first room to get started</p>
+                            <form id="createRoomForm" class="create-room-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <input 
+                                            type="text" 
+                                            id="roomName" 
+                                            placeholder="Enter room name" 
+                                            required
+                                            autocomplete="off"
+                                        >
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-small">
+                                        <i class="fas fa-plus-circle"></i> Create
+                                    </button>
+                                </div>
+                                <div id="createRoomMessage" class="form-message" style="display: none;"></div>
+                            </form>
                         </div>
-                    </div>
-                </section>
+                    </section>
+
+                    <!-- Rooms List Section -->
+                    <section class="rooms-section">
+                        <div class="section-header">
+                            <h2>Your Rooms</h2>
+                            <button id="refreshRooms" class="btn btn-icon">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                        
+                        <div id="roomsGrid" class="rooms-grid">
+                            <!-- Rooms will be loaded here -->
+                            <div class="empty-state">
+                                <i class="fas fa-video-slash"></i>
+                                <p>No rooms created yet</p>
+                                <p>Create your first room to get started</p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
             </main>
         </div>
     </div>
 
     <!-- Auth functions -->
-    <script defer src="/static/js/auth.js?v=7"></script>
+    <script src="/static/js/auth.js?v=8"></script>
     
-    <!-- Rooms API - Inline to ensure availability -->
-    <script>
-    (function() {
-        'use strict';
-        console.log('📦 Rooms module: Starting inline initialization');
-        
-        const API_BASE_URL = '';
-        
-        window.createRoom = async function(roomName) {
-            const token = localStorage.getItem('authToken');
-            const response = await fetch(`${API_BASE_URL}/api/rooms/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ name: roomName })
-            });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.detail || 'Failed to create room');
-            return data;
-        };
-        
-        window.listRooms = async function() {
-            const token = localStorage.getItem('authToken');
-            const response = await fetch(`${API_BASE_URL}/api/rooms/`, {
-                method: 'GET',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.detail || 'Failed to fetch rooms');
-            return data;
-        };
-        
-        window.joinRoom = async function(roomId) {
-            const token = localStorage.getItem('authToken');
-            const response = await fetch(`${API_BASE_URL}/api/rooms/${roomId}/join`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.detail || 'Failed to join room');
-            return data;
-        };
-        
-        window.leaveRoom = async function(roomId) {
-            const token = localStorage.getItem('authToken');
-            const response = await fetch(`${API_BASE_URL}/api/rooms/${roomId}/leave`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.detail || 'Failed to leave room');
-            return data;
-        };
-        
-        console.log('✅ Rooms module: Functions defined');
-        console.log('  - createRoom:', typeof window.createRoom);
-        console.log('  - listRooms:', typeof window.listRooms);
-        console.log('  - joinRoom:', typeof window.joinRoom);
-        console.log('  - leaveRoom:', typeof window.leaveRoom);
-    })();
-    </script>
+    <!-- Rooms API -->
+    <script src="/static/js/rooms.js?v=14"></script>
     
     <!-- Dashboard logic -->
-    <script defer src="/static/js/dashboard.js?v=11"></script>
+    <script src="/static/js/dashboard.js?v=15"></script>
 </body>
 </html>

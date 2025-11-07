@@ -351,12 +351,16 @@ body::before {
    Dashboard
 ======================== */
 
+.dashboard-wrapper {
+    padding: 2rem 0;
+}
+
 .dashboard-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
-    padding: 2rem 0;
+    padding: 0;
     gap: 1rem;
     flex-wrap: wrap;
 }
@@ -372,11 +376,57 @@ body::before {
     filter: drop-shadow(0 2px 8px rgba(99, 102, 241, 0.3));
 }
 
+.dashboard-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+.create-room-card {
+    margin-bottom: 0;
+    padding: 1.5rem;
+}
+
+.create-room-card .card-header h2 {
+    font-size: 1.25rem;
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+}
+
+.form-row {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+}
+
+.form-row .form-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.rooms-section {
+    margin-top: 1rem;
+}
+
 .rooms-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 1.5rem;
     margin-bottom: 2rem;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.section-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text-primary);
 }
 
 /* Room Card Styles */
@@ -856,6 +906,15 @@ body::before {
     
     .room-card {
         padding: 1.5rem;
+    }
+    
+    .form-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .form-row .btn {
+        width: 100%;
     }
 }
 

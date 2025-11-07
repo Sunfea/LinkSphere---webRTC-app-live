@@ -1,16 +1,22 @@
 // API Configuration
-const API_BASE_URL = '';
+const API_BASE_URL = 'http://localhost:8000';
+
+console.log('🔄 Auth.js: Script loaded');
 
 // ========================
 // Utility Functions
 // ========================
 
 function getAuthToken() {
-    return localStorage.getItem('authToken');
+    const token = localStorage.getItem('authToken');
+    console.log('Getting auth token:', token ? 'present' : 'missing');
+    return token;
 }
 
 function setAuthToken(token) {
+    console.log('Setting auth token:', token ? 'present' : 'missing');
     localStorage.setItem('authToken', token);
+    console.log('Auth token set in localStorage');
 }
 
 function removeAuthToken() {
@@ -249,19 +255,11 @@ async function handleLogin(event) {
     setButtonLoading('loginBtn', true);
     
     try {
-        const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+        const data = await apiCall('/api/auth/login', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            skipAuth: true,
             body: JSON.stringify({ username, password })
         });
-        
-        const data = await response.json();
-        
-        if (!response.ok) {
-            throw new Error(data.detail || 'Login failed');
-        }
         
         // Store token and username
         setAuthToken(data.access_token);
@@ -289,7 +287,9 @@ function handleLogout() {
 // ========================
 
 function requireAuth() {
+    console.log('Checking authentication...');
     const token = getAuthToken();
+    console.log('Auth check result:', token ? 'authenticated' : 'not authenticated');
     if (!token) {
         window.location.href = '/login';
         return false;

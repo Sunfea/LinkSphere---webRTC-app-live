@@ -1,15 +1,13 @@
 // Dashboard Logic
 // Handles room management UI
 
+console.log('📍 Dashboard.js: Script started executing');
+
+// Room API Functions are now in rooms.js module
+
 // Check authentication on page load
 if (!requireAuth()) {
     throw new Error('Authentication required');
-}
-
-// Display username
-const username = getUsernameFromToken() || localStorage.getItem('assignedUsername');
-if (username) {
-    document.getElementById('userDisplay').textContent = username;
 }
 
 // ========================
@@ -22,32 +20,19 @@ let currentRooms = [];
 // Event Listeners
 // ========================
 
-document.getElementById('logoutBtn').addEventListener('click', handleLogout);
-
-document.getElementById('createRoomBtn').addEventListener('click', () => {
-    document.getElementById('createRoomSection').style.display = 'block';
-    document.getElementById('roomName').focus();
-});
-
-document.getElementById('cancelCreateBtn').addEventListener('click', () => {
-    document.getElementById('createRoomSection').style.display = 'none';
-    document.getElementById('createRoomForm').reset();
-    clearMessage('createRoomMessage');
-});
-
-document.getElementById('createRoomForm').addEventListener('submit', handleCreateRoom);
-
 // ========================
 // Room Management Functions
 // ========================
 
 async function loadRooms() {
     const roomsGrid = document.getElementById('roomsGrid');
+    console.log('loadRooms called');
     
     try {
         roomsGrid.innerHTML = '<div class="loading">Loading rooms...</div>';
         
         const rooms = await window.listRooms();
+        console.log('Rooms loaded:', rooms);
         currentRooms = rooms;
         
         if (rooms.length === 0) {
@@ -169,6 +154,70 @@ function handleInvite(roomId) {
 window.handleJoinRoom = handleJoinRoom;
 window.handleInvite = handleInvite;
 
+// Function to manually load rooms module if it fails to load
+function loadRoomsModuleManually() {
+    console.log('Attempting to manually load rooms module...');
+    
+    // Check if rooms.js script is already in the document
+    const existingScript = document.querySelector('script[src*="rooms.js"]');
+    if (existingScript) {
+        console.log('Rooms.js script already exists in document');
+        if (existingScript.dataset.loaded) {
+            console.log('Rooms.js script already loaded');
+            return;
+        }
+        
+        // Try to reload the script
+        existingScript.remove();
+    }
+    
+    // Create a new script element
+    const script = document.createElement('script');
+    script.src = '/static/js/rooms.js?v=14';
+    script.dataset.loaded = 'false';
+    
+    script.onload = function() {
+        console.log('Rooms.js script manually loaded');
+        script.dataset.loaded = 'true';
+        // Try to initialize dashboard again
+        setTimeout(initializeDashboard, 100);
+    };
+    
+    script.onerror = function(err) {
+        console.error('Rooms.js script failed to load manually:', err);
+        // Fallback: Define functions directly
+        defineRoomFunctionsFallback();
+    };
+    
+    document.head.appendChild(script);
+}
+
+// Fallback function definitions
+function defineRoomFunctionsFallback() {
+    console.log('Using fallback room functions...');
+    
+    if (typeof window.createRoom !== 'function') {
+        window.createRoom = async function(roomName) {
+            throw new Error('Room functions not available');
+        };
+    }
+    
+    if (typeof window.listRooms !== 'function') {
+        window.listRooms = async function() {
+            throw new Error('Room functions not available');
+        };
+    }
+    
+    if (typeof window.joinRoom !== 'function') {
+        window.joinRoom = async function(roomId) {
+            throw new Error('Room functions not available');
+        };
+    }
+    
+    // Try to initialize dashboard again
+    setTimeout(initializeDashboard, 100);
+}
+
 // ========================
 // Utility Functions
 // ========================
@@ -179,18 +228,124 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+function showMessage(elementId, message, isError = false) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.textContent = message;
+        element.className = `form-message ${isError ? 'error' : 'success'}`;
+        element.style.display = 'block';
+    }
+}
+
+function clearMessage(elementId) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.textContent = '';
+        element.style.display = 'none';
+    }
+}
+
 // ========================
 // Initialize
 // ========================
 
 // With defer attribute, scripts execute in order after DOM is ready
 console.log('Dashboard initializing...');
+console.log('📍 Dashboard.js: Document ready state:', document.readyState);
+console.log('📍 Dashboard.js: Current window object keys:', Object.keys(window).filter(key => key.includes('Room')));
 console.log('window.createRoom:', typeof window.createRoom);
 console.log('window.listRooms:', typeof window.listRooms);
 console.log('window.joinRoom:', typeof window.joinRoom);
 
-// Load rooms immediately
-loadRooms();
+// Check if rooms.js script is actually loaded
+console.log('Checking if rooms.js script is loaded...');
+const roomsScript = document.querySelector('script[src*="rooms.js"]');
+if (roomsScript) {
+    console.log('Rooms.js script found in DOM');
+    console.log('Rooms.js script src:', roomsScript.src);
+    console.log('Rooms.js script readyState:', roomsScript.readyState);
+} else {
+    console.error('Rooms.js script not found in DOM');
+}
+
+// Wait for rooms module to be ready if not already loaded
+function initializeDashboard(attempts = 0) {
+    const maxAttempts = 100; // Increase max attempts
+    
+    console.log(`Checking for room functions (attempt ${attempts + 1}/${maxAttempts})...`);
+    console.log('window.createRoom:', typeof window.createRoom);
+    console.log('window.listRooms:', typeof window.listRooms);
+    console.log('window.joinRoom:', typeof window.joinRoom);
+    
+    // Display username once DOM is ready
+    displayUsername();
+    
+    // Add event listeners once DOM is ready
+    const logoutBtn = document.getElementById('logoutBtn');
+    const refreshRoomsBtn = document.getElementById('refreshRooms');
+    const createRoomForm = document.getElementById('createRoomForm');
+    
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', handleLogout);
+    }
+    
+    if (refreshRoomsBtn) {
+        refreshRoomsBtn.addEventListener('click', loadRooms);
+    }
+    
+    if (createRoomForm) {
+        createRoomForm.addEventListener('submit', handleCreateRoom);
+    }
+    
+    if (typeof window.createRoom === 'function' && 
+        typeof window.listRooms === 'function' && 
+        typeof window.joinRoom === 'function') {
+        console.log('All room functions found, loading rooms...');
+        // Load rooms immediately
+        loadRooms();
+    } else {
+        console.log('Rooms module not ready, waiting...');
+        if (attempts < maxAttempts) {
+            setTimeout(() => initializeDashboard(attempts + 1), 50); // Check more frequently
+        } else {
+            console.error('Maximum attempts reached, rooms module still not ready');
+            // Try to manually load the rooms module
+            loadRoomsModuleManually();
+        }
+    }
+}
+
+// Also listen for the custom event from rooms.js
+window.addEventListener('roomsModuleLoaded', () => {
+    console.log('Rooms module loaded event received');
+    initializeDashboard();
+});
+
+// Add load and error event listeners to the rooms script
+const roomsScriptElement = document.querySelector('script[src*="rooms.js"]');
+if (roomsScriptElement) {
+    roomsScriptElement.addEventListener('load', () => {
+        console.log('Rooms.js script loaded successfully');
+    });
+    roomsScriptElement.addEventListener('error', (err) => {
+        console.error('Rooms.js script failed to load:', err);
+        // Try to manually load the rooms module
+        loadRoomsModuleManually();
+    });
+}
+
+initializeDashboard();
 
 // Refresh rooms every 10 seconds
 setInterval(loadRooms, 10000);
+
+// Display username - moved to run after DOM is ready
+function displayUsername() {
+    const username = getUsernameFromToken() || localStorage.getItem('assignedUsername');
+    const userDisplayElement = document.getElementById('userDisplay');
+    if (username && userDisplayElement) {
+        userDisplayElement.textContent = username;
+    } else if (userDisplayElement) {
+        userDisplayElement.textContent = 'Guest';
+    }
+}

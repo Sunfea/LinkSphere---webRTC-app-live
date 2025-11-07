@@ -22,6 +22,13 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 async def signup(request: SignupRequest, db: Session = Depends(get_db)):
     """Signup endpoint - accepts email, generates and stores OTP, sends OTP to email"""
     
+    # Validate that email ends with @gmail.com
+    if not request.email.endswith('@gmail.com'):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email must be a Gmail address (end with @gmail.com)"
+        )
+    
     # Check if user already exists
     existing_user = db.query(User).filter(User.email == request.email).first()
     if existing_user:
@@ -60,6 +67,13 @@ async def signup(request: SignupRequest, db: Session = Depends(get_db)):
 @router.post("/verify-otp", response_model=OTPResponse)
 async def verify_otp(request: VerifyOTPRequest, db: Session = Depends(get_db)):
     """Verify OTP endpoint - accepts email + OTP, verifies OTP and sets is_verified = True"""
+    
+    # Validate that email ends with @gmail.com
+    if not request.email.endswith('@gmail.com'):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email must be a Gmail address (end with @gmail.com)"
+        )
     
     # Find OTP record
     otp_record = db.query(OTP).filter(
@@ -104,6 +118,13 @@ async def verify_otp(request: VerifyOTPRequest, db: Session = Depends(get_db)):
 async def set_username(request: SetUsernameRequest, db: Session = Depends(get_db)):
     """Set username endpoint - accepts email + desired username, validates and stores username"""
     
+    # Validate that email ends with @gmail.com
+    if not request.email.endswith('@gmail.com'):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email must be a Gmail address (end with @gmail.com)"
+        )
+    
     # Validate username format (lowercase, alphanumeric)
     if not re.match("^[a-z0-9]+$", request.username):
         raise HTTPException(
@@ -139,6 +160,13 @@ async def set_username(request: SetUsernameRequest, db: Session = Depends(get_db
 @router.post("/login", response_model=TokenResponse)
 async def login(request: LoginRequest, db: Session = Depends(get_db)):
     """Login endpoint - accepts email, returns JWT token if email is verified"""
+    
+    # Validate that email ends with @gmail.com
+    if not request.email.endswith('@gmail.com'):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email must be a Gmail address (end with @gmail.com)"
+        )
     
     # Find user
     user = db.query(User).filter(User.email == request.email).first()

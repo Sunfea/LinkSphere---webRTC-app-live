@@ -12,8 +12,10 @@ from app.core.database import engine, Base
 import uvicorn
 
 # Create database tables (handle errors gracefully)
+print("Attempting to create database tables...")
 try:
     Base.metadata.create_all(bind=engine)
+    print("Database tables created successfully")
 except Exception as e:
     print(f"Warning: Could not create database tables: {e}")
 
@@ -38,9 +40,13 @@ app.add_middleware(
 )
 
 # Include API routes
+print("Including API routes...")
 app.include_router(api_router, prefix="/api")
+print("API routes included")
 app.include_router(legacy_router, prefix="/api/legacy")
+print("Legacy routes included")
 app.include_router(metrics_router, prefix="/api")
+print("Metrics routes included")
 
 # Mount the signaling app for WebSocket connections
 app.mount("/ws", signaling_app)
@@ -48,7 +54,12 @@ app.mount("/ws", signaling_app)
 # Serve frontend static files
 # In Docker, frontend is copied to /app/frontend
 # In development, it's in the project root
-frontend_path = Path("/app/frontend")
+frontend_path = Path("../frontend")
+
+# In Docker, check if we're in the /app directory
+if Path("/app").exists() and Path("/app/frontend").exists():
+    frontend_path = Path("/app/frontend")
+
 print(f"Looking for frontend at: {frontend_path}")
 print(f"Frontend path exists: {frontend_path.exists()}")
 

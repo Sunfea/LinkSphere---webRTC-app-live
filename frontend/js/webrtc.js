@@ -6,6 +6,37 @@ if (!requireAuth()) {
     throw new Error('Authentication required');
 }
 
+// Wait for rooms module to be ready
+function waitForRoomsModule(maxAttempts = 50) {
+    return new Promise((resolve, reject) => {
+        let attempts = 0;
+        
+        function check() {
+            attempts++;
+            if (typeof window.leaveRoom === 'function') {
+                resolve();
+            } else if (attempts >= maxAttempts) {
+                reject(new Error('Rooms module failed to load'));
+            } else {
+                setTimeout(check, 100);
+            }
+        }
+        
+        check();
+    });
+}
+
+// Initialize room after ensuring rooms module is loaded
+async function initRoomWithDependencies() {
+    try {
+        await waitForRoomsModule();
+        await initRoom();
+    } catch (error) {
+        console.error('Failed to initialize room:', error);
+        showStatus(`Error: ${error.message}`, true);
+    }
+}
+
 // ========================
 // Configuration
 // ========================
@@ -416,4 +447,4 @@ function showStatus(message, isError = false) {
 // Initialize on Load
 // ========================
 
-initRoom();
+initRoomWithDependencies();
