@@ -1,7 +1,9 @@
 // WebSocket Signaling Module
 // Handles WebSocket connection for WebRTC signaling
 
-const WS_BASE_URL = 'http://localhost:8000';
+const WS_BASE_URL = '';
+
+console.log('📍 Signaling.js: Script loaded');
 
 class SignalingClient {
     constructor(roomId, username) {

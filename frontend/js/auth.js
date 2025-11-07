@@ -1,7 +1,7 @@
 // API Configuration
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = '';
 
-console.log('🔄 Auth.js: Script loaded');
+console.log('📍 Auth.js: Script loaded');
 
 // ========================
 // Utility Functions
