@@ -2,7 +2,7 @@
 
 A modern, real-time video conferencing application built with FastAPI and WebRTC technology.
 
-Live - https://linksphere-webrtc-app-production.up.railway.app/
+Live - https://linksphere-webrtc-app-2-production.up.railway.app/
 
 ## 🚀 Features
 
