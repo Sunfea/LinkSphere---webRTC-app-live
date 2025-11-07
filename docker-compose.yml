@@ -10,7 +10,8 @@ services:
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - REDIS_URL=${REDIS_URL}
-      - DEBUG=False
+      - DEBUG=True
+      - SMTP_HOST=localhost
     networks:
       - webrtc-network
     restart: unless-stopped
